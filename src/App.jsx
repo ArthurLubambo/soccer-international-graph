@@ -48,7 +48,6 @@ function App() {
   const [tolerance, setTolerance] = useState(1e-6);
   const [resolveShootouts, setResolveShootouts] = useState(true);
   const [normalizeNames, setNormalizeNames] = useState(true);
-  const [edgeDirection, setEdgeDirection] = useState('loser-to-winner'); // 'loser-to-winner' (strength) or 'winner-to-loser'
   const [tieWeight, setTieWeight] = useState(1.0);
   const [fifaOnly, setFifaOnly] = useState(true);
 
@@ -148,7 +147,7 @@ function App() {
       nameRules: normalizeNames ? rawNameRules : [],
       shootoutsMap,
       resolveShootouts,
-      edgeDirection,
+      edgeDirection: 'loser-to-winner',
       tieWeight
     });
   }, [
@@ -159,7 +158,6 @@ function App() {
     normalizeNames,
     shootoutsMap,
     resolveShootouts,
-    edgeDirection,
     tieWeight
   ]);
 
@@ -484,25 +482,6 @@ function App() {
                     All time
                   </button>
                 </div>
-              </div>
-
-              {/* Edge Direction */}
-              <div className="form-group">
-                <label htmlFor="edgeDirection">Edge Flow Direction</label>
-                <select 
-                  id="edgeDirection"
-                  value={edgeDirection}
-                  onChange={(e) => setEdgeDirection(e.target.value)}
-                  className="form-input"
-                >
-                  <option value="loser-to-winner">Loser → Winner (Rank Strength)</option>
-                  <option value="winner-to-loser">Winner → Loser (Rank Vulnerability)</option>
-                </select>
-                <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>
-                  {edgeDirection === 'loser-to-winner' 
-                    ? 'PageRank flows from loser to winner. Winning teams accumulate rank.' 
-                    : 'PageRank flows from winner to loser. Losing teams accumulate rank.'}
-                </p>
               </div>
 
               {/* PageRank Damping Factor */}
