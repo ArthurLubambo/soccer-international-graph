@@ -1,21 +1,23 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import Papa from 'papaparse';
-import { 
-  Trophy, 
-  Network, 
-  Settings, 
-  Search, 
-  Sliders, 
-  ChevronLeft, 
-  ChevronRight, 
-  Info, 
-  RefreshCw, 
+import {
+  Trophy,
+  Network,
+  Settings,
+  Search,
+  Sliders,
+  ChevronLeft,
+  ChevronRight,
+  Info,
+  RefreshCw,
   Calendar,
   AlertTriangle,
   Play,
   ArrowRight,
   TrendingUp,
-  X
+  X,
+  Share2,
+  Check
 } from 'lucide-react';
 import { buildGraph, calculatePageRank, buildShootoutsMap } from './utils/pagerank';
 import { FIFA_MEMBERS } from './data/fifaMembers';
@@ -50,6 +52,49 @@ function App() {
   const [normalizeNames, setNormalizeNames] = useState(true);
   const [tieWeight, setTieWeight] = useState(1.0);
   const [fifaOnly, setFifaOnly] = useState(true);
+  const [copied, setCopied] = useState(false);
+
+  // Read URL params once on first mount (before data loads)
+  useEffect(() => {
+    const p = new URLSearchParams(window.location.search);
+    if (p.has('sy'))   setStartYear(parseInt(p.get('sy')));
+    if (p.has('ey'))   setEndYear(parseInt(p.get('ey')));
+    if (p.has('d'))    setDampingFactor(parseFloat(p.get('d')));
+    if (p.has('iter')) setMaxIterations(parseInt(p.get('iter')));
+    if (p.has('tol'))  setTolerance(parseFloat(p.get('tol')));
+    if (p.has('tw'))   setTieWeight(parseFloat(p.get('tw')));
+    if (p.has('rs'))   setResolveShootouts(p.get('rs') === '1');
+    if (p.has('nn'))   setNormalizeNames(p.get('nn') === '1');
+    if (p.has('fifa')) setFifaOnly(p.get('fifa') === '1');
+    if (p.has('tab'))  setActiveTab(p.get('tab'));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Keep URL in sync with current params (replaceState = no history spam)
+  useEffect(() => {
+    if (loading) return;
+    const p = new URLSearchParams({
+      sy:   startYear,
+      ey:   endYear,
+      d:    dampingFactor,
+      iter: maxIterations,
+      tol:  tolerance,
+      tw:   tieWeight,
+      rs:   resolveShootouts ? '1' : '0',
+      nn:   normalizeNames   ? '1' : '0',
+      fifa: fifaOnly         ? '1' : '0',
+      tab:  activeTab,
+    });
+    window.history.replaceState(null, '', `?${p.toString()}`);
+  }, [loading, startYear, endYear, dampingFactor, maxIterations, tolerance,
+      tieWeight, resolveShootouts, normalizeNames, fifaOnly, activeTab]);
+
+  const handleShare = () => {
+    navigator.clipboard.writeText(window.location.href).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
 
   // Load and Parse CSV files on mount
   useEffect(() => {
@@ -112,10 +157,11 @@ function App() {
         
         setMinAvailableYear(minYear);
         setMaxAvailableYear(maxYear);
-        
-        // Default to latest 10 years
-        setStartYear(Math.max(minYear, maxYear - 10));
-        setEndYear(maxYear);
+
+        // Only apply defaults if URL has no year params
+        const p = new URLSearchParams(window.location.search);
+        if (!p.has('sy')) setStartYear(Math.max(minYear, maxYear - 10));
+        if (!p.has('ey')) setEndYear(maxYear);
         setLoading(false);
       } catch (err) {
         console.error(err);
@@ -373,14 +419,20 @@ function App() {
           <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
             Data source: {rawMatches.length.toLocaleString()} matches (1872 - 2026)
           </span>
-          <a 
-            href="https://github.com" 
-            target="_blank" 
-            rel="noreferrer" 
-            style={{ color: 'var(--text-secondary)', textDecoration: 'none', fontSize: '0.85rem', fontWeight: 500 }}
+          <button
+            onClick={handleShare}
+            style={{
+              display: 'flex', alignItems: 'center', gap: '0.4rem',
+              padding: '0.35rem 0.75rem', fontSize: '0.8rem', fontWeight: 600,
+              background: copied ? 'rgba(34,197,94,0.15)' : 'rgba(255,255,255,0.07)',
+              border: `1px solid ${copied ? 'rgba(34,197,94,0.5)' : 'rgba(255,255,255,0.15)'}`,
+              borderRadius: '0.5rem', color: copied ? '#4ade80' : 'var(--text-secondary)',
+              cursor: 'pointer', transition: 'all 0.2s'
+            }}
           >
-            Soccer Graph
-          </a>
+            {copied ? <Check size={14} /> : <Share2 size={14} />}
+            {copied ? 'Copied!' : 'Share'}
+          </button>
         </div>
       </header>
 
