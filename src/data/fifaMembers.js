@@ -18,7 +18,7 @@ export const FIFA_MEMBERS = new Set([
 
   // CONCACAF (41)
   'Anguilla', 'Antigua and Barbuda', 'Aruba', 'Bahamas', 'Barbados', 'Belize',
-  'Bermuda', 'British Virgin Islands', 'Canada', 'Cayman Islands', 'Cuba',
+  'Bermuda', 'British Virgin Islands', 'Canada', 'Cayman Islands', 'Costa Rica', 'Cuba',
   'Curaçao', 'Dominica', 'Dominican Republic', 'El Salvador', 'Grenada',
   'Guatemala', 'Guyana', 'Haiti', 'Honduras', 'Jamaica', 'Mexico',
   'Montserrat', 'Nicaragua', 'Panama', 'Puerto Rico',
@@ -32,7 +32,7 @@ export const FIFA_MEMBERS = new Set([
   'Congo', 'DR Congo', 'Djibouti', 'Egypt', 'Equatorial Guinea', 'Eritrea',
   'Eswatini', 'Ethiopia', 'Gabon', 'Gambia', 'Ghana', 'Guinea',
   'Guinea-Bissau', 'Kenya', 'Lesotho', 'Liberia', 'Libya', 'Madagascar',
-  'Malawi', 'Mali', 'Mauritania', 'Mauritius', 'Morocco', 'Mozambique',
+  'Ivory Coast', 'Malawi', 'Mali', 'Mauritania', 'Mauritius', 'Morocco', 'Mozambique',
   'Namibia', 'Niger', 'Nigeria', 'Rwanda', 'São Tomé and Príncipe', 'Senegal',
   'Seychelles', 'Sierra Leone', 'Somalia', 'South Africa', 'South Sudan',
   'Sudan', 'Tanzania', 'Togo', 'Tunisia', 'Uganda', 'Zambia', 'Zimbabwe',
@@ -48,6 +48,6 @@ export const FIFA_MEMBERS = new Set([
   'United Arab Emirates', 'Uzbekistan', 'Vietnam', 'Yemen',
 
   // OFC (11)
-  'Cook Islands', 'Fiji', 'New Caledonia', 'New Zealand', 'Papua New Guinea',
+  'American Samoa', 'Cook Islands', 'Fiji', 'New Caledonia', 'New Zealand', 'Papua New Guinea',
   'Samoa', 'Solomon Islands', 'Tahiti', 'Tonga', 'Tuvalu', 'Vanuatu',
 ]);

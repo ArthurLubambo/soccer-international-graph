@@ -281,10 +281,11 @@ function App() {
   // Total pages count
   const totalPages = Math.max(1, Math.ceil(sortedRankings.length / pageSize));
 
-  // Reset page when search query changes
+  // Reset page when anything that changes the rankings changes
   useEffect(() => {
     setPage(1);
-  }, [searchQuery]);
+  }, [searchQuery, dampingFactor, maxIterations, tolerance, tieWeight,
+      startYear, endYear, resolveShootouts, normalizeNames, fifaOnly]);
 
   // Stats for the stats row
   const dashboardStats = useMemo(() => {
