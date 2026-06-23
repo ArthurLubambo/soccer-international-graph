@@ -39,19 +39,19 @@ function App() {
   const [pageSize] = useState(15);
   const [sortConfig, setSortConfig] = useState({ key: 'score', direction: 'desc' });
 
-  // PageRank config state (default latest 10 years matches)
-  const [startYear, setStartYear] = useState(2016);
+  // PageRank config state
+  const [startYear, setStartYear] = useState(2023);
   const [endYear, setEndYear] = useState(2026);
   const [minAvailableYear, setMinAvailableYear] = useState(1872);
   const [maxAvailableYear, setMaxAvailableYear] = useState(2026);
-  
-  const [dampingFactor, setDampingFactor] = useState(0.85);
+
+  const [dampingFactor, setDampingFactor] = useState(0.95);
   const [maxIterations, setMaxIterations] = useState(100);
   const [tolerance, setTolerance] = useState(1e-6);
-  const [resolveShootouts, setResolveShootouts] = useState(true);
+  const [resolveShootouts, setResolveShootouts] = useState(false);
   const [normalizeNames, setNormalizeNames] = useState(true);
   const [tieWeight, setTieWeight] = useState(1.0);
-  const [fifaOnly, setFifaOnly] = useState(true);
+  const [fifaOnly, setFifaOnly] = useState(false);
   const [copied, setCopied] = useState(false);
 
   // Read URL params once on first mount (before data loads)
@@ -160,7 +160,7 @@ function App() {
 
         // Only apply defaults if URL has no year params
         const p = new URLSearchParams(window.location.search);
-        if (!p.has('sy')) setStartYear(Math.max(minYear, maxYear - 10));
+        if (!p.has('sy')) setStartYear(Math.max(minYear, 2023));
         if (!p.has('ey')) setEndYear(maxYear);
         setLoading(false);
       } catch (err) {
