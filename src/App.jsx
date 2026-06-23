@@ -2,7 +2,6 @@ import React, { useState, useEffect, useMemo } from 'react';
 import Papa from 'papaparse';
 import {
   Trophy,
-  Network,
   Settings,
   Search,
   Sliders,
@@ -21,7 +20,6 @@ import {
 } from 'lucide-react';
 import { buildGraph, calculatePageRank, buildShootoutsMap } from './utils/pagerank';
 import { FIFA_MEMBERS } from './data/fifaMembers';
-import NetworkGraph from './components/NetworkGraph';
 
 function PageRankDiagram() {
   const nodes = [
@@ -79,7 +77,6 @@ function App() {
   const [rawShootouts, setRawShootouts] = useState([]);
 
   // UI state
-  const [activeTab, setActiveTab] = useState('rankings'); // 'rankings' | 'graph'
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTeam, setSelectedTeam] = useState(null);
   const [page, setPage] = useState(1);
@@ -113,7 +110,6 @@ function App() {
     if (p.has('rs'))   setResolveShootouts(p.get('rs') === '1');
     if (p.has('nn'))   setNormalizeNames(p.get('nn') === '1');
     if (p.has('fifa')) setFifaOnly(p.get('fifa') === '1');
-    if (p.has('tab'))  setActiveTab(p.get('tab'));
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -130,11 +126,10 @@ function App() {
       rs:   resolveShootouts ? '1' : '0',
       nn:   normalizeNames   ? '1' : '0',
       fifa: fifaOnly         ? '1' : '0',
-      tab:  activeTab,
     });
     window.history.replaceState(null, '', `?${p.toString()}`);
   }, [loading, startYear, endYear, dampingFactor, maxIterations, tolerance,
-      tieWeight, resolveShootouts, normalizeNames, fifaOnly, activeTab]);
+      tieWeight, resolveShootouts, normalizeNames, fifaOnly]);
 
   const handleShare = () => {
     navigator.clipboard.writeText(window.location.href).then(() => {
@@ -652,29 +647,10 @@ function App() {
               </div>
             </div>
 
-            {/* Navigation Tabs */}
-            <div className="tabs">
-              <button
-                className={`tab-btn ${activeTab === 'rankings' ? 'active' : ''}`}
-                onClick={() => setActiveTab('rankings')}
-              >
-                <Trophy size={16} />
-                Rankings Table
-              </button>
-              <button
-                className={`tab-btn ${activeTab === 'graph' ? 'active' : ''}`}
-                onClick={() => setActiveTab('graph')}
-              >
-                <Network size={16} />
-                Interactive Graph Visualizer
-              </button>
-            </div>
-
-            {/* Workspace: Rankings/Graph Split-screen with details inspector */}
+            {/* Workspace */}
             <div className="workspace-layout">
-              {/* Left Side: Table or Visualizer */}
+              {/* Left Side: Table */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                {activeTab === 'rankings' ? (
                   <div className="card" style={{ flex: 1 }}>
                     {/* Table search toolbar */}
                     <div className="search-container">
@@ -774,16 +750,6 @@ function App() {
                       </div>
                     )}
                   </div>
-                ) : (
-                  // Network Graph visualizer
-                  <NetworkGraph 
-                    nodes={graphData.nodes}
-                    adj={graphData.adj}
-                    ranks={prResult.ranks}
-                    selectedTeam={selectedTeam}
-                    onSelectTeam={setSelectedTeam}
-                  />
-                )}
               </div>
 
               {/* Right Side: Team Detail Inspector */}
@@ -840,9 +806,7 @@ function App() {
                           Rank Inflows (Sources)
                         </h3>
                         <p style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginBottom: '0.25rem' }}>
-                          {edgeDirection === 'loser-to-winner' 
-                            ? 'Teams this country defeated (they feed PageRank here):' 
-                            : 'Teams that defeated this country (they push PageRank here):'}
+                          Teams this country defeated (they feed PageRank here):
                         </p>
                         <div className="connection-list">
                           {teamDetailData.inflows.length > 0 ? (
@@ -875,9 +839,7 @@ function App() {
                           Rank Outflows (Destinations)
                         </h3>
                         <p style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginBottom: '0.25rem' }}>
-                          {edgeDirection === 'loser-to-winner' 
-                            ? 'Teams that defeated this country (we pass PageRank to them):' 
-                            : 'Teams this country defeated (we push PageRank to them):'}
+                          Teams that defeated this country (we pass PageRank to them):
                         </p>
                         <div className="connection-list">
                           {teamDetailData.outflows.length > 0 ? (
