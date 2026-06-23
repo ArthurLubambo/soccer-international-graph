@@ -23,6 +23,53 @@ import { buildGraph, calculatePageRank, buildShootoutsMap } from './utils/pagera
 import { FIFA_MEMBERS } from './data/fifaMembers';
 import NetworkGraph from './components/NetworkGraph';
 
+function PageRankDiagram() {
+  const nodes = [
+    { label: 'Weak',    y: 185, r: 22, opacity: 0.35 },
+    { label: 'Average', y: 115, r: 27, opacity: 0.65 },
+    { label: 'Elite',   y:  38, r: 33, opacity: 1.00 },
+  ];
+  const cx = 80;
+  return (
+    <svg viewBox="0 0 160 230" width="100%" style={{ display: 'block', margin: '0 auto', maxWidth: 200 }}>
+      <defs>
+        <marker id="hiw-arrow" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+          <path d="M0,1 L0,7 L7,4 Z" fill="#6366f1" />
+        </marker>
+      </defs>
+
+      {/* Animated flow lines */}
+      {[{ y1: 163, y2: 148 }, { y1: 92, y2: 76 }].map(({ y1, y2 }, i) => (
+        <line key={i} x1={cx} y1={y1} x2={cx} y2={y2}
+          className="hiw-flow-line"
+          style={{ animationDelay: `${i * 0.4}s` }}
+          markerEnd="url(#hiw-arrow)"
+        />
+      ))}
+
+      {/* Nodes */}
+      {nodes.map(({ label, y, r, opacity }) => (
+        <g key={label}>
+          <circle cx={cx} cy={y} r={r}
+            fill={`rgba(99,102,241,${opacity})`}
+            stroke="#6366f1" strokeWidth="1.5"
+          />
+          <text x={cx} y={y} textAnchor="middle" dominantBaseline="middle"
+            fontSize="9" fontWeight="600" fill="white" fontFamily="Inter,sans-serif">
+            {label}
+          </text>
+        </g>
+      ))}
+
+      {/* Legend */}
+      <text x={cx} y={220} textAnchor="middle" fontSize="8.5"
+        fill="#9ca3af" fontFamily="Inter,sans-serif">
+        score flows from loser → winner
+      </text>
+    </svg>
+  );
+}
+
 function App() {
   // Data loading states
   const [loading, setLoading] = useState(true);
@@ -38,6 +85,7 @@ function App() {
   const [page, setPage] = useState(1);
   const [pageSize] = useState(15);
   const [sortConfig, setSortConfig] = useState({ key: 'score', direction: 'desc' });
+  const [showHowItWorks, setShowHowItWorks] = useState(false);
 
   // PageRank config state
   const [startYear, setStartYear] = useState(2023);
@@ -683,20 +731,23 @@ function App() {
             </div>
 
             {/* Navigation Tabs */}
-            <div className="tabs">
-              <button 
+            <div className="tabs" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <button
                 className={`tab-btn ${activeTab === 'rankings' ? 'active' : ''}`}
                 onClick={() => setActiveTab('rankings')}
               >
                 <Trophy size={16} />
                 Rankings Table
               </button>
-              <button 
+              <button
                 className={`tab-btn ${activeTab === 'graph' ? 'active' : ''}`}
                 onClick={() => setActiveTab('graph')}
               >
                 <Network size={16} />
                 Interactive Graph Visualizer
+              </button>
+              <button className="how-it-works-btn" onClick={() => setShowHowItWorks(true)} style={{ marginLeft: 'auto' }}>
+                <Info size={15} /> How it works
               </button>
             </div>
 
@@ -944,6 +995,19 @@ function App() {
             </div>
           </section>
         </main>
+      )}
+
+      {showHowItWorks && (
+        <div className="hiw-backdrop" onClick={() => setShowHowItWorks(false)}>
+          <div className="hiw-card" onClick={e => e.stopPropagation()}>
+            <button className="hiw-close" onClick={() => setShowHowItWorks(false)}>
+              <X size={16} />
+            </button>
+            <h3>How PageRank works</h3>
+            <p>Every win earns score transferred from the loser. Beating a highly-ranked team moves more score than beating a weak one — like citations between academic papers.</p>
+            <PageRankDiagram />
+          </div>
+        </div>
       )}
     </div>
   );
