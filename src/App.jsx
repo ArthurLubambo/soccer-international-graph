@@ -85,7 +85,6 @@ function App() {
   const [page, setPage] = useState(1);
   const [pageSize] = useState(15);
   const [sortConfig, setSortConfig] = useState({ key: 'score', direction: 'desc' });
-  const [showHowItWorks, setShowHowItWorks] = useState(false);
 
   // PageRank config state
   const [startYear, setStartYear] = useState(2023);
@@ -585,105 +584,28 @@ function App() {
                 </div>
               </div>
 
-              {/* PageRank Damping Factor */}
-              <div className="form-group">
-                <label>Damping Factor (d = {dampingFactor})</label>
-                <input 
-                  type="range" 
-                  min="0.1" 
-                  max="0.95" 
-                  step="0.05" 
-                  value={dampingFactor} 
-                  onChange={(e) => setDampingFactor(parseFloat(e.target.value))}
-                  style={{ width: '100%', cursor: 'pointer' }}
-                />
-              </div>
+            </div>
 
-              {/* Advanced Settings Divider */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', margin: '1rem 0 0.5rem 0' }}>
-                <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Advanced Graph Settings</span>
-                <div style={{ flex: 1, height: '1px', backgroundColor: 'var(--border-color)' }}></div>
-              </div>
+            {/* How it works */}
+            <div className="card">
+              <h2 className="card-title">
+                <Info size={18} style={{ color: 'var(--accent-primary)' }} />
+                How it works
+              </h2>
 
-              {/* Normalize Names Toggle */}
-              <div className="toggle-group">
-                <label htmlFor="toggle-normalize">Normalize Historical Names</label>
-                <span className="toggle-switch">
-                  <input 
-                    type="checkbox" 
-                    id="toggle-normalize" 
-                    checked={normalizeNames}
-                    onChange={(e) => setNormalizeNames(e.target.checked)}
-                  />
-                  <span className="toggle-slider"></span>
-                </span>
-              </div>
-              <p style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '-0.5rem', marginBottom: '1rem' }}>
-                Maps former names to modern names (e.g. Swaziland to Eswatini) based on match date.
-              </p>
+              <PageRankDiagram />
 
-              {/* Resolve Shootouts Toggle */}
-              <div className="toggle-group">
-                <label htmlFor="toggle-shootouts">Resolve Shootout Winners</label>
-                <span className="toggle-switch">
-                  <input 
-                    type="checkbox" 
-                    id="toggle-shootouts" 
-                    checked={resolveShootouts}
-                    onChange={(e) => setResolveShootouts(e.target.checked)}
-                  />
-                  <span className="toggle-slider"></span>
-                </span>
+              <div className="hiw-section">
+                <span className="hiw-label">PageRank algorithm</span>
+                <p>Each team starts with equal score. On every iteration, score flows along graph edges until values converge. The final score reflects the <em>quality</em> of wins, not just their quantity.</p>
               </div>
-              <p style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '-0.5rem', marginBottom: '1rem' }}>
-                Uses shootout database to determine a winner for ties, instead of treating them as draws.
-              </p>
-
-              {/* FIFA Members Only Toggle */}
-              <div className="toggle-group">
-                <label htmlFor="toggle-fifa">FIFA Members Only</label>
-                <span className="toggle-switch">
-                  <input
-                    type="checkbox"
-                    id="toggle-fifa"
-                    checked={fifaOnly}
-                    onChange={(e) => setFifaOnly(e.target.checked)}
-                  />
-                  <span className="toggle-slider"></span>
-                </span>
+              <div className="hiw-section">
+                <span className="hiw-label">Edges</span>
+                <p>Each match creates a directed edge from the <em>loser</em> to the <em>winner</em>, weighted by goal difference + 1. A 3–0 win transfers more score than a 1–0 win.</p>
               </div>
-              <p style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '-0.5rem', marginBottom: '1rem' }}>
-                Hides non-FIFA entities (e.g. Abkhazia, Northern Cyprus) from the rankings.
-              </p>
-
-              {/* Tie Weight */}
-              <div className="form-group">
-                <label htmlFor="tieWeight">Tie Weight: {tieWeight}</label>
-                <input 
-                  type="range" 
-                  min="0" 
-                  max="2" 
-                  step="0.1" 
-                  value={tieWeight} 
-                  onChange={(e) => setTieWeight(parseFloat(e.target.value))}
-                  style={{ width: '100%', cursor: 'pointer' }}
-                />
-              </div>
-
-              {/* Algorithm Details Summary */}
-              <div style={{ padding: '0.75rem', backgroundColor: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-color)', borderRadius: '0.5rem', fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.25rem' }}>
-                  <span>Iterations run:</span>
-                  <span className="text-success" style={{ fontWeight: 600 }}>{prResult.iterations}</span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.25rem' }}>
-                  <span>Tolerance limit:</span>
-                  <span>{tolerance}</span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span>Convergence diff:</span>
-                  <span>{prResult.toleranceDiff ? prResult.toleranceDiff.toExponential(3) : '0.000'}</span>
-                </div>
+              <div className="hiw-section">
+                <span className="hiw-label">Draws</span>
+                <p>Draws create two equal-weight edges in both directions — both teams exchange score symmetrically, with no advantage to either side.</p>
               </div>
             </div>
           </section>
@@ -731,7 +653,7 @@ function App() {
             </div>
 
             {/* Navigation Tabs */}
-            <div className="tabs" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <div className="tabs">
               <button
                 className={`tab-btn ${activeTab === 'rankings' ? 'active' : ''}`}
                 onClick={() => setActiveTab('rankings')}
@@ -745,9 +667,6 @@ function App() {
               >
                 <Network size={16} />
                 Interactive Graph Visualizer
-              </button>
-              <button className="how-it-works-btn" onClick={() => setShowHowItWorks(true)} style={{ marginLeft: 'auto' }}>
-                <Info size={15} /> How it works
               </button>
             </div>
 
@@ -997,18 +916,6 @@ function App() {
         </main>
       )}
 
-      {showHowItWorks && (
-        <div className="hiw-backdrop" onClick={() => setShowHowItWorks(false)}>
-          <div className="hiw-card" onClick={e => e.stopPropagation()}>
-            <button className="hiw-close" onClick={() => setShowHowItWorks(false)}>
-              <X size={16} />
-            </button>
-            <h3>How PageRank works</h3>
-            <p>Every win earns score transferred from the loser. Beating a highly-ranked team moves more score than beating a weak one — like citations between academic papers.</p>
-            <PageRankDiagram />
-          </div>
-        </div>
-      )}
     </div>
   );
 }
