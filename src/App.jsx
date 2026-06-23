@@ -638,7 +638,7 @@ function App() {
               </div>
               <div className="stat-card">
                 <div className="stat-icon" style={{ color: 'var(--accent-secondary)', backgroundColor: 'rgba(168, 85, 247, 0.1)' }}>
-                  <Network size={18} />
+                  <TrendingUp size={18} />
                 </div>
                 <div className="stat-info">
                   <h3>Graph Density</h3>
